@@ -34,27 +34,27 @@ export function DropdownMenuTrigger({ children }: { children: ReactNode }) {
 }
 
 export function DropdownMenuContent({ children }: { children: ReactNode }) {
-  const context = useContext(DropdownContext)
+  const contextValue = useContext(DropdownContext)
   const ref = useRef<HTMLDivElement>(null)
 
-  if (!context) throw new Error('DropdownMenuContent must be used within DropdownMenu')
+  if (!contextValue) throw new Error('DropdownMenuContent must be used within DropdownMenu')
+
+  const { isOpen, setIsOpen } = contextValue
 
   useEffect(() => {
-    if (!context) return
-
     function handleClickOutside(event: MouseEvent) {
       if (ref.current && !ref.current.contains(event.target as Node)) {
-        context.setIsOpen(false)
+        setIsOpen(false)
       }
     }
 
-    if (context.isOpen) {
+    if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [context])
+  }, [isOpen, setIsOpen])
 
-  if (!context.isOpen) return null
+  if (!isOpen) return null
 
   return (
     <div
