@@ -1,17 +1,23 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { mockStores } from '@/mocks/data/stores'
 
 export default function StoresPage() {
   const [stores] = useState(mockStores)
+  const router = useRouter()
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Available Stores</h1>
-        <p className="text-gray-600">Browse stores in your area</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Available Stores</h1>
+          <p className="text-gray-600">Browse stores in your area</p>
+        </div>
+        <Button variant="outline" onClick={() => router.push('/dashboard/grocery-lists/new')}>Back</Button>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
