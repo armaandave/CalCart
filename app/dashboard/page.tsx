@@ -21,7 +21,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-        <p className="text-gray-600">Welcome back! Here's your cooking overview.</p>
+        <p className="text-gray-600">Welcome back! Here&#39;s your cooking overview.</p>
       </div>
 
       {/* Stats */}
