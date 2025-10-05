@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
+export const dynamic = 'force-dynamic'
 import { consolidateUnits, convertUnit } from '@/lib/utils'
 
 export async function POST(request: NextRequest) {

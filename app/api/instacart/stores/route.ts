@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { instacartService } from '@/lib/services/instacart-mock'
 
+export const dynamic = 'force-dynamic'
 export async function GET() {
   try {
     const stores = instacartService.getStores()

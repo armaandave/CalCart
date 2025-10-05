@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db'
 import { hashPassword, createToken, setAuthCookie } from '@/lib/auth'
 import { GoalType, BudgetType, Priority } from '@prisma/client'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

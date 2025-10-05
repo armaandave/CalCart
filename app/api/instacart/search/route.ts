@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { instacartService } from '@/lib/services/instacart-mock'
 
+export const dynamic = 'force-dynamic'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

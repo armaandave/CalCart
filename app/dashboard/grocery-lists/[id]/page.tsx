@@ -7,7 +7,7 @@ import { useCartStore } from '@/lib/stores/cartStore'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/components/ui/use-toast'
-import { ArrowLeft, DollarSign, ShoppingCart } from 'lucide-react'
+import { ArrowLeft, DollarSign, ShoppingCart, Trash2 } from 'lucide-react'
 import { mockStores } from '@/mocks/data/stores'
 import { formatCurrency } from '@/lib/utils'
 
@@ -76,6 +76,14 @@ export default function GroceryListDetailPage() {
     }
   }
 
+  const handleDeleteItem = async (itemId: string) => {
+    // TODO: Add API call to delete item from grocery list
+    toast({
+      title: 'Item removed',
+      description: 'The item has been removed from your list.'
+    })
+  }
+
   if (!currentList) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -108,16 +116,24 @@ export default function GroceryListDetailPage() {
           <CardDescription>Consolidated ingredients from your recipes</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {currentList.items.map((item) => (
-              <div key={item.id} className="flex justify-between items-center py-2 border-b last:border-0">
-                <div>
-                  <span className="font-medium">{item.name}</span>
-                  <span className="text-sm text-gray-600 ml-2">({item.category})</span>
+              <div 
+                key={item.id} 
+                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
+              >
+                <div className="flex-1">
+                  <h4 className="font-medium text-base">{item.name}</h4>
+                  <p className="text-sm text-gray-500 mt-0.5">{item.category}</p>
                 </div>
-                <span className="text-gray-600">
-                  {item.quantity} {item.unit}
-                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDeleteItem(item.id)}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             ))}
           </div>

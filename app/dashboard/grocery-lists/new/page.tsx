@@ -10,6 +10,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { useRecipeStore } from '@/lib/stores/recipeStore'
 import { useGroceryStore } from '@/lib/stores/groceryStore'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Trash2 } from 'lucide-react'
 
 export default function NewGroceryListPage() {
   const router = useRouter()
@@ -333,29 +334,33 @@ export default function NewGroceryListPage() {
               {allItems.length === 0 ? (
                 <p className="text-sm text-gray-600">Add items above or toggle recipes to populate the list.</p>
               ) : (
-                <ul className="divide-y">
+                <div className="space-y-3">
                   {allItems.map(item => (
-                    <li key={`${item.name}`} className="py-2 flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <div className="font-medium truncate">
+                    <div 
+                      key={`${item.name}`} 
+                      className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-base truncate">
                           {item.name}
-                        </div>
+                        </h4>
                         {item.category ? (
-                          <div className="text-xs text-gray-500">{item.category}</div>
+                          <p className="text-sm text-gray-500 mt-0.5">{item.category}</p>
                         ) : null}
                       </div>
                       <Button
                         type="button"
                         variant="ghost"
-                        className="h-6 px-2 text-gray-600"
+                        size="sm"
                         onClick={() => removeItem(item.name)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         aria-label={`Remove ${item.name}`}
                       >
-                        ×
+                        <Trash2 className="h-4 w-4" />
                       </Button>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
             </CardContent>
           </Card>
