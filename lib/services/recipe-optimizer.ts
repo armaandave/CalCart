@@ -5,14 +5,17 @@ import { Recipe, UserProfile } from '@prisma/client'
 
 
 export class RecipeOptimizerService {
-  private client: GoogleGenAI
+  private client: GoogleGenAI | null = null
 
-  constructor() {
-    const apiKey = process.env.GEMINI_API_KEY
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not set')
+  private getClient() {
+    if (!this.client) {
+      const apiKey = process.env.GEMINI_API_KEY
+      if (!apiKey) {
+        throw new Error('GEMINI_API_KEY is not set')
+      }
+      this.client = new GoogleGenAI({ apiKey })
     }
-    this.client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
+    return this.client
   }
 
   async optimizeRecipe(
@@ -23,7 +26,7 @@ export class RecipeOptimizerService {
 
     try {
       const systemInstruction = 'You are a professional nutritionist and chef. Provide responses in valid JSON format only, with no additional text or markdown formatting.'
-      const response = await this.client.models.generateContent({
+      const response = await this.getClient().models.generateContent({
         model: "gemini-2.5-pro",
         contents: [
           `${systemInstruction}\n\n${prompt}`
@@ -156,7 +159,7 @@ Return your response in the following JSON format (no other text):
       if (isUrl) {
         // Use URL Context (and optionally Google Search) tools so Gemini fetches page content itself
         console.debug('[RecipeOptimizer] Tools enabled: urlContext + googleSearch')
-        const response = await this.client.models.generateContent({
+        const response = await this.getClient().models.generateContent({
           model: 'gemini-2.5-pro',
           contents: [
             `${systemPrompt}\n\n${userPrompt}`
@@ -182,7 +185,7 @@ Return your response in the following JSON format (no other text):
       } else {
         // NL only - no tools needed
         console.debug('[RecipeOptimizer] Tools disabled for NL input')
-        const response = await this.client.models.generateContent({
+        const response = await this.getClient().models.generateContent({
           model: 'gemini-2.5-pro',
           contents: [
             `${systemPrompt}\n\n${userPrompt}`

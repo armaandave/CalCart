@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { recipeOptimizer } from '@/lib/services/recipe-optimizer'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getSession()
