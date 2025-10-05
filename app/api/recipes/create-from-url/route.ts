@@ -48,7 +48,6 @@ export async function POST(request: NextRequest) {
         description: parsedRecipe.description || '',
         servings: parsedRecipe.servings || 4,
         instructions: parsedRecipe.instructions,
-        sourceUrl: url, // Store original URL
         originalIngredients: {
           create: parsedRecipe.ingredients.map((ing) => ({
             name: ing.name,
