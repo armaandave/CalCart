@@ -24,7 +24,6 @@ export default function DashboardPage() {
       {/* Welcome Section */}
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-2">Welcome back!</h1>
-        <p className="text-gray-500 text-lg">Here&apos;s your nutrition overview for this week</p>
       </div>
 
       {/* Stats Cards */}
