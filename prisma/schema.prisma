@@ -1,0 +1,213 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String         @id @default(cuid())
+  email          String         @unique
+  hashedPassword String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  
+  profile        UserProfile?
+  recipes        Recipe[]
+  groceryLists   GroceryList[]
+  shoppingCarts  ShoppingCart[]
+}
+
+model UserProfile {
+  id             String     @id @default(cuid())
+  userId         String     @unique
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Location
+  location       String
+  selectedStores String[]
+  
+  // Dietary Info
+  allergies      String[]
+  restrictions   String[]
+  preferences    String[]
+  
+  // Health Goals
+  goalType       GoalType
+  targetCalories Int?
+  targetProtein  Int?
+  targetCarbs    Int?
+  targetFats     Int?
+  
+  // Budget
+  budgetType     BudgetType
+  budgetAmount   Float
+  
+  // Priorities (stored as ordered array)
+  priorities     Priority[]
+  
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Recipe {
+  id                    String              @id @default(cuid())
+  userId                String
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name                  String
+  description           String?
+  servings              Int                 @default(4)
+  prepTime              Int?
+  cookTime              Int?
+  
+  originalIngredients   RecipeIngredient[]  @relation("original")
+  optimizedIngredients  RecipeIngredient[]  @relation("optimized")
+  
+  instructions          String[]
+  optimizationNotes     String[]
+  
+  originalNutrition     Nutrition?          @relation("originalNutrition")
+  optimizedNutrition    Nutrition?          @relation("optimizedNutrition")
+  
+  isOptimized           Boolean             @default(false)
+  
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  
+  groceryListItems      GroceryListItem[]
+}
+
+model RecipeIngredient {
+  id                 String   @id @default(cuid())
+  
+  originalRecipeId   String?
+  originalRecipe     Recipe?  @relation("original", fields: [originalRecipeId], references: [id], onDelete: Cascade)
+  
+  optimizedRecipeId  String?
+  optimizedRecipe    Recipe?  @relation("optimized", fields: [optimizedRecipeId], references: [id], onDelete: Cascade)
+  
+  name               String
+  quantity           Float
+  unit               String
+  category           String
+  notes              String?
+  
+  isOptional         Boolean  @default(false)
+  isSubstitution     Boolean  @default(false)
+  originalIngredient String?
+  
+  createdAt          DateTime @default(now())
+}
+
+model Nutrition {
+  id                 String   @id @default(cuid())
+  
+  calories           Int
+  protein            Float
+  carbs              Float
+  fats               Float
+  fiber              Float?
+  sugar              Float?
+  sodium             Float?
+  
+  originalRecipeId   String?  @unique
+  originalRecipe     Recipe?  @relation("originalNutrition", fields: [originalRecipeId], references: [id], onDelete: Cascade)
+  
+  optimizedRecipeId  String?  @unique
+  optimizedRecipe    Recipe?  @relation("optimizedNutrition", fields: [optimizedRecipeId], references: [id], onDelete: Cascade)
+  
+  createdAt          DateTime @default(now())
+}
+
+model GroceryList {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name          String
+  weekStartDate DateTime?
+  
+  items         GroceryListItem[]
+  shoppingCarts ShoppingCart[]
+  
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model GroceryListItem {
+  id               String            @id @default(cuid())
+  groceryListId    String
+  groceryList      GroceryList       @relation(fields: [groceryListId], references: [id], onDelete: Cascade)
+  
+  recipeId         String?
+  recipe           Recipe?           @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  
+  name             String
+  quantity         Float
+  unit             String
+  category         String
+  
+  priceComparisons PriceComparison[]
+  selectedStoreId  String?
+  
+  isPurchased      Boolean           @default(false)
+  
+  createdAt        DateTime          @default(now())
+}
+
+model PriceComparison {
+  id          String          @id @default(cuid())
+  itemId      String
+  item        GroceryListItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  
+  storeId     String
+  storeName   String
+  price       Float
+  available   Boolean
+  lastUpdated DateTime        @default(now())
+  
+  productId   String?
+  productUrl  String?
+  
+  @@index([itemId, storeId])
+}
+
+model ShoppingCart {
+  id             String      @id @default(cuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  groceryListId  String
+  groceryList    GroceryList @relation(fields: [groceryListId], references: [id], onDelete: Cascade)
+  
+  provider       String
+  deepLink       String
+  estimatedTotal Float
+  deliveryFee    Float
+  
+  createdAt      DateTime    @default(now())
+}
+
+enum GoalType {
+  LOSE_WEIGHT
+  BUILD_MUSCLE
+  MAINTAIN
+  CUSTOM
+}
+
+enum BudgetType {
+  PER_MEAL
+  WEEKLY
+}
+
+enum Priority {
+  HEALTH
+  BUDGET
+  TASTE
+}
+
