@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -247,14 +246,9 @@ export default function NewGroceryListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Create Grocery List</h1>
-          <p className="text-gray-600">Toggle recipes on the left to build your master list or add custom items below.</p>
-        </div>
-        <Link href="/dashboard/grocery-lists/manage" className="md:mt-1">
-          <Button variant="outline">Manage Lists</Button>
-        </Link>
+      <div>
+        <h1 className="text-3xl font-bold mb-2">Create Grocery List</h1>
+        <p className="text-gray-600">Toggle recipes on the left to build your master list or add custom items below.</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-[280px_1fr]">
