@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/components/ui/use-toast'
 import { Sparkles, Trash2, ArrowLeft } from 'lucide-react'
+import { diffIngredients, diffNutrition } from '@/lib/utils/diff'
 
 export default function RecipeDetailPage() {
   const params = useParams()
@@ -211,6 +212,73 @@ export default function RecipeDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      {currentRecipe.isOptimized && (() => {
+        const ingredientChanges = diffIngredients(
+          currentRecipe.originalIngredients.map((i: any) => ({ name: i.name, quantity: i.quantity, unit: i.unit })),
+          currentRecipe.optimizedIngredients.map((i: any) => ({ name: i.name, quantity: i.quantity, unit: i.unit }))
+        ).filter(d => d.change !== 'unchanged')
+
+        const nutritionChanges = currentRecipe.originalNutrition && currentRecipe.optimizedNutrition
+          ? diffNutrition(currentRecipe.originalNutrition, currentRecipe.optimizedNutrition).filter(d => d.delta !== 0)
+          : []
+
+        const hasChanges = ingredientChanges.length > 0 || nutritionChanges.length > 0
+
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Changes</CardTitle>
+              <CardDescription>What changed from the original</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {!hasChanges ? (
+                <p className="text-sm text-gray-600">
+                  No changes - this recipe was created already optimized for your health goals.
+                </p>
+              ) : (
+                <>
+                  {ingredientChanges.length > 0 && (
+                    <div>
+                      <h3 className="font-medium mb-2">Ingredients</h3>
+                      <ul className="space-y-1 text-sm">
+                        {ingredientChanges.map((d, idx) => (
+                          <li key={idx} className={d.change === 'added' ? 'text-green-700' : d.change === 'removed' ? 'text-red-700' : 'text-blue-700'}>
+                            {d.change === 'added' && (
+                              <span>+ {d.after!.name} {d.after!.quantity} {d.after!.unit}</span>
+                            )}
+                            {d.change === 'removed' && (
+                              <span>- {d.before!.name} {d.before!.quantity} {d.before!.unit}</span>
+                            )}
+                            {d.change === 'modified' && (
+                              <span>
+                                ~ {d.before!.name}: {d.before!.quantity} {d.before!.unit} → {d.after!.quantity} {d.after!.unit}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {nutritionChanges.length > 0 && (
+                    <div>
+                      <h3 className="font-medium mb-2">Nutrition (total recipe)</h3>
+                      <ul className="space-y-1 text-sm">
+                        {nutritionChanges.map((d, idx) => (
+                          <li key={idx} className={d.delta < 0 ? 'text-green-700' : 'text-red-700'}>
+                            {d.delta < 0 ? '-' : '+'} {d.key}: {Math.round(Math.abs(d.delta))}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
+        )
+      })()}
     </div>
   )
 }
