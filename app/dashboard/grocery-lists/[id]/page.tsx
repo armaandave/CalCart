@@ -99,10 +99,18 @@ export default function GroceryListDetailPage() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <Button onClick={handleComparePrices} disabled={isLoadingPrices || selectedStores.length === 0}>
-          <DollarSign className="h-4 w-4 mr-2" />
-          {isLoadingPrices ? 'Comparing...' : 'Compare Prices'}
-        </Button>
+        <div className="flex gap-3">
+          <Button onClick={handleComparePrices} disabled={isLoadingPrices || selectedStores.length === 0}>
+            <DollarSign className="h-4 w-4 mr-2" />
+            {isLoadingPrices ? 'Comparing...' : 'Compare Prices'}
+          </Button>
+          <Button 
+            onClick={() => router.push(`/dashboard/stores?listId=${currentList.id}`)}
+            variant="default"
+          >
+            View Store Comparison
+          </Button>
+        </div>
       </div>
 
       <div>

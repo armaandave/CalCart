@@ -6,6 +6,18 @@ interface GroceryListWithItems extends GroceryList {
   items: (GroceryListItem & { priceComparisons: PriceComparison[] })[]
 }
 
+interface CreateListParams {
+  name: string
+  recipeIds: string[]
+  customItems?: Array<{
+    name: string
+    quantity: number
+    unit: string
+    category: string
+  }>
+  weekStartDate?: string
+}
+
 interface GroceryStore {
   groceryLists: GroceryListWithItems[]
   currentList: GroceryListWithItems | null
@@ -17,7 +29,7 @@ interface GroceryStore {
   
   fetchGroceryLists: () => Promise<void>
   fetchGroceryList: (id: string) => Promise<void>
-  createList: (name: string, recipeIds: string[], weekStartDate?: string) => Promise<GroceryListWithItems>
+  createList: (params: CreateListParams) => Promise<GroceryListWithItems>
   deleteList: (id: string) => Promise<void>
   fetchPrices: (groceryListId: string, storeIds: string[]) => Promise<void>
   setCurrentList: (list: GroceryListWithItems | null) => void
@@ -73,13 +85,13 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
     }
   },
 
-  createList: async (name, recipeIds, weekStartDate) => {
+  createList: async (params) => {
     set({ isLoading: true, error: null })
     try {
       const response = await fetch('/api/grocery-list/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, recipeIds, weekStartDate })
+        body: JSON.stringify(params)
       })
 
       if (!response.ok) {

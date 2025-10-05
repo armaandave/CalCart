@@ -16,17 +16,17 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, recipeIds, weekStartDate } = body
+    const { name, recipeIds = [], customItems = [], weekStartDate } = body
 
-    if (!name || !recipeIds || recipeIds.length === 0) {
+    if (!name || (recipeIds.length === 0 && customItems.length === 0)) {
       return NextResponse.json(
-        { error: 'Name and recipe IDs are required' },
+        { error: 'Name and at least one recipe or custom item are required' },
         { status: 400 }
       )
     }
 
     // Get recipes with ingredients
-    const recipes = await prisma.recipe.findMany({
+    const recipes = recipeIds.length > 0 ? await prisma.recipe.findMany({
       where: {
         id: { in: recipeIds },
         userId: session.userId
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         optimizedIngredients: true,
         originalIngredients: true
       }
-    })
+    }) : []
 
     // Consolidate ingredients
     const ingredientMap = new Map<string, {
@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
       recipeIds: string[]
     }>()
 
+    // Add recipe ingredients
     for (const recipe of recipes) {
       const ingredients = recipe.isOptimized
         ? recipe.optimizedIngredients
@@ -71,6 +72,25 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Add custom items
+    for (const item of customItems) {
+      const normalizedUnit = consolidateUnits(item.unit)
+      const key = `${item.name.toLowerCase()}-${normalizedUnit}`
+
+      if (ingredientMap.has(key)) {
+        const existing = ingredientMap.get(key)!
+        existing.quantity += item.quantity
+      } else {
+        ingredientMap.set(key, {
+          name: item.name,
+          quantity: item.quantity,
+          unit: normalizedUnit,
+          category: item.category || 'Other',
+          recipeIds: []
+        })
+      }
+    }
+
     // Create grocery list
     const groceryList = await prisma.groceryList.create({
       data: {
@@ -83,7 +103,7 @@ export async function POST(request: NextRequest) {
             quantity: Math.ceil(item.quantity * 100) / 100, // Round to 2 decimals
             unit: item.unit,
             category: item.category,
-            recipeId: item.recipeIds[0] // Associate with first recipe
+            recipeId: item.recipeIds.length > 0 ? item.recipeIds[0] : null // Associate with first recipe if available
           }))
         }
       },

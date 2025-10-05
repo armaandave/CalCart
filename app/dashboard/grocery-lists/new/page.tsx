@@ -242,7 +242,42 @@ export default function NewGroceryListPage() {
       })
       return
     }
-    router.push('/dashboard/stores')
+
+    try {
+      setIsLoading(true)
+      
+      // Create the grocery list
+      const listName = name.trim() || `Grocery List ${new Date().toLocaleDateString()}`
+      const groceryList = await createList({
+        name: listName,
+        recipeIds: selectedRecipeIds,
+        customItems: customItems.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          unit: item.unit,
+          category: item.category || 'Other'
+        }))
+      })
+
+      // Clear local storage
+      clearMasterList()
+
+      toast({
+        title: 'List created!',
+        description: 'Comparing prices across stores...'
+      })
+
+      // Navigate to price comparison page
+      router.push(`/dashboard/stores?listId=${groceryList.id}`)
+    } catch (error) {
+      toast({
+        title: 'Failed to create list',
+        description: error instanceof Error ? error.message : 'Please try again',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
