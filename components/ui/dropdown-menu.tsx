@@ -40,6 +40,8 @@ export function DropdownMenuContent({ children }: { children: ReactNode }) {
   if (!context) throw new Error('DropdownMenuContent must be used within DropdownMenu')
 
   useEffect(() => {
+    if (!context) return
+
     function handleClickOutside(event: MouseEvent) {
       if (ref.current && !ref.current.contains(event.target as Node)) {
         context.setIsOpen(false)
