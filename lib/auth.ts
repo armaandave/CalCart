@@ -6,7 +6,7 @@ const SECRET_KEY = new TextEncoder().encode(
   process.env.JWT_SECRET || 'fallback-secret-change-this'
 )
 
-export interface JWTPayload {
+export interface AuthJWTPayload {
   userId: string
   email: string
   iat?: number
@@ -24,7 +24,7 @@ export async function verifyPassword(
   return bcrypt.compare(password, hashedPassword)
 }
 
-export async function createToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): Promise<string> {
+export async function createToken(payload: Omit<AuthJWTPayload, 'iat' | 'exp'>): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -32,16 +32,26 @@ export async function createToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): Pro
     .sign(SECRET_KEY)
 }
 
-export async function verifyToken(token: string): Promise<JWTPayload | null> {
+export async function verifyToken(token: string): Promise<AuthJWTPayload | null> {
   try {
     const { payload } = await jwtVerify(token, SECRET_KEY)
-    return payload as JWTPayload
+    // Narrow unknown JWTPayload from `jose` to our app-specific shape
+    if (
+      payload &&
+      typeof payload === 'object' &&
+      typeof (payload as Record<string, unknown>).userId === 'string' &&
+      typeof (payload as Record<string, unknown>).email === 'string'
+    ) {
+      const typedPayload = payload as unknown as AuthJWTPayload
+      return typedPayload
+    }
+    return null
   } catch (error) {
     return null
   }
 }
 
-export async function getSession(): Promise<JWTPayload | null> {
+export async function getSession(): Promise<AuthJWTPayload | null> {
   const cookieStore = cookies()
   const token = cookieStore.get('auth-token')
   
