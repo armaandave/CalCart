@@ -5,8 +5,8 @@ import { verifyToken } from '@/lib/auth'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Protect dashboard routes
-  if (pathname.startsWith('/dashboard')) {
+  // Protect dashboard and onboarding routes
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding')) {
     const token = request.cookies.get('auth-token')?.value
 
     if (!token) {
@@ -38,6 +38,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/signup']
+  matcher: ['/dashboard/:path*', '/onboarding', '/login', '/signup']
 }
 

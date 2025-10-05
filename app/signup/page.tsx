@@ -40,7 +40,7 @@ export default function SignupPage() {
         title: 'Account created!',
         description: 'Welcome to Recipe Optimizer.'
       })
-      router.push('/dashboard')
+      router.push('/onboarding')
     } catch (error) {
       toast({
         title: 'Signup failed',

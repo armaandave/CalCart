@@ -2,149 +2,119 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { useRecipeStore } from '@/lib/stores/recipeStore'
 import { useGroceryStore } from '@/lib/stores/groceryStore'
-import { Plus, ChefHat, List } from 'lucide-react'
+import { useUserStore } from '@/lib/stores/userStore'
+import { Plus, ShoppingCart, DollarSign, TrendingUp, ChefHat } from 'lucide-react'
 
 export default function DashboardPage() {
   const { recipes, fetchRecipes } = useRecipeStore()
   const { groceryLists, fetchGroceryLists } = useGroceryStore()
+  const { user } = useUserStore()
 
   useEffect(() => {
     fetchRecipes()
     fetchGroceryLists()
   }, [fetchRecipes, fetchGroceryLists])
 
+  const optimizedRecipes = recipes.filter(r => r.isOptimized).length
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-        <p className="text-gray-600">Welcome back! Here&#39;s your cooking overview.</p>
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Welcome Section */}
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-2">Welcome back!</h1>
+        <p className="text-gray-500 text-lg">Here's your nutrition overview for this week</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Recipes</CardTitle>
-            <CardDescription>All your saved recipes</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-primary">{recipes.length}</p>
-          </CardContent>
-        </Card>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {/* Recipes Optimized */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-gray-500 text-sm mb-2">Recipes Optimized</p>
+              <p className="text-4xl font-bold">{optimizedRecipes}</p>
+              <div className="flex items-center gap-1 mt-2">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+                <span className="text-green-600 text-sm font-medium">12%</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+              <ChefHat className="h-6 w-6 text-gray-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Optimized Recipes</CardTitle>
-            <CardDescription>Health-optimized versions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-green-600">
-              {recipes.filter(r => r.isOptimized).length}
-            </p>
-          </CardContent>
-        </Card>
+        {/* Money Saved */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-gray-500 text-sm mb-2">Money Saved</p>
+              <p className="text-4xl font-bold">$127</p>
+              <div className="flex items-center gap-1 mt-2">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+                <span className="text-green-600 text-sm font-medium">15%</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+              <DollarSign className="h-6 w-6 text-gray-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Grocery Lists</CardTitle>
-            <CardDescription>Your shopping lists</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-blue-600">{groceryLists.length}</p>
-          </CardContent>
-        </Card>
+        {/* Grocery Lists */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-gray-500 text-sm mb-2">Grocery Lists</p>
+              <p className="text-4xl font-bold">{groceryLists.length}</p>
+              <div className="flex items-center gap-1 mt-2">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+                <span className="text-green-600 text-sm font-medium">5%</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+              <ShoppingCart className="h-6 w-6 text-gray-600" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Recipes</CardTitle>
-            <CardDescription>Your latest recipe additions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {recipes.length === 0 ? (
-              <div className="text-center py-8">
-                <ChefHat className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-600 mb-4">No recipes yet</p>
-                <Link href="/dashboard/recipes/new">
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Recipe
-                  </Button>
-                </Link>
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Add New Recipe */}
+          <Link href="/dashboard/recipes/new">
+            <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                  <Plus className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">Add New Recipe</h3>
+                  <p className="text-gray-500 text-sm">Optimize a new recipe</p>
+                </div>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {recipes.slice(0, 3).map((recipe) => (
-                  <Link
-                    key={recipe.id}
-                    href={`/dashboard/recipes/${recipe.id}`}
-                    className="block p-3 rounded-lg hover:bg-gray-50 transition"
-                  >
-                    <h4 className="font-medium">{recipe.name}</h4>
-                    <p className="text-sm text-gray-600">
-                      {recipe.servings} servings
-                      {recipe.isOptimized && (
-                        <span className="ml-2 text-green-600">• Optimized</span>
-                      )}
-                    </p>
-                  </Link>
-                ))}
-                <Link href="/dashboard/recipes">
-                  <Button variant="outline" className="w-full">
-                    View All Recipes
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          </Link>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Grocery Lists</CardTitle>
-            <CardDescription>Your latest shopping lists</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {groceryLists.length === 0 ? (
-              <div className="text-center py-8">
-                <List className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-600 mb-4">No grocery lists yet</p>
-                <Link href="/dashboard/grocery-lists/new">
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create List
-                  </Button>
-                </Link>
+          {/* Create Grocery List */}
+          <Link href="/dashboard/grocery-lists/new">
+            <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                  <ShoppingCart className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">Create Grocery List</h3>
+                  <p className="text-gray-500 text-sm">From your recipes</p>
+                </div>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {groceryLists.slice(0, 3).map((list) => (
-                  <Link
-                    key={list.id}
-                    href={`/dashboard/grocery-lists/${list.id}`}
-                    className="block p-3 rounded-lg hover:bg-gray-50 transition"
-                  >
-                    <h4 className="font-medium">{list.name}</h4>
-                    <p className="text-sm text-gray-600">
-                      {list.items.length} items
-                    </p>
-                  </Link>
-                ))}
-                <Link href="/dashboard/grocery-lists">
-                  <Button variant="outline" className="w-full">
-                    View All Lists
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          </Link>
+        </div>
       </div>
     </div>
   )
