@@ -24,7 +24,9 @@ export default function DashboardLayout({
 
   useEffect(() => {
     if (!isAuthenticated) {
-      fetchUser().catch(() => {
+      fetchUser().catch((error) => {
+        console.error('Failed to fetch user:', error)
+        // Only redirect to login if we're sure there's no auth
         router.push('/login')
       })
     }

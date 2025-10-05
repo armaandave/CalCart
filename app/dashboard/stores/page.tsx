@@ -106,10 +106,16 @@ export default function PriceComparisonPage() {
         }
       })
 
-      // Sort by total price and find best store
-      pricing.sort((a, b) => a.total - b.total)
-      if (pricing.length > 0 && pricing[0].itemCount > 0) {
-        setBestStoreId(pricing[0].id)
+      // Sort by available items (descending) and find best store by price
+      pricing.sort((a, b) => b.itemCount - a.itemCount)
+      
+      // Find the store with the lowest total price (for "Best Deal" badge)
+      const bestPriceStore = [...pricing]
+        .filter(s => s.itemCount > 0)
+        .sort((a, b) => a.total - b.total)[0]
+      
+      if (bestPriceStore) {
+        setBestStoreId(bestPriceStore.id)
       }
       
       setStoresWithPricing(pricing)

@@ -51,10 +51,10 @@ export default function DashboardPage() {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-gray-500 text-sm mb-2">Money Saved</p>
-              <p className="text-4xl font-bold">$127</p>
+              <p className="text-4xl font-bold">$0</p>
               <div className="flex items-center gap-1 mt-2">
                 <TrendingUp className="h-4 w-4 text-green-600" />
-                <span className="text-green-600 text-sm font-medium">15%</span>
+                <span className="text-green-600 text-sm font-medium">0%</span>
               </div>
             </div>
             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
@@ -68,10 +68,10 @@ export default function DashboardPage() {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-gray-500 text-sm mb-2">Grocery Lists</p>
-              <p className="text-4xl font-bold">{groceryLists.length}</p>
+              <p className="text-4xl font-bold">0</p>
               <div className="flex items-center gap-1 mt-2">
                 <TrendingUp className="h-4 w-4 text-green-600" />
-                <span className="text-green-600 text-sm font-medium">5%</span>
+                <span className="text-green-600 text-sm font-medium">0%</span>
               </div>
             </div>
             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">

@@ -27,11 +27,17 @@ export const useUserStore = create<UserStore>((set, get) => ({
   login: async (email, password) => {
     set({ isLoading: true })
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        signal: controller.signal
       })
+
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
         const error = await response.json()
@@ -42,6 +48,9 @@ export const useUserStore = create<UserStore>((set, get) => ({
       set({ user: data.user, isAuthenticated: true })
     } catch (error) {
       console.error('Login error:', error)
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Request timed out. Please check your connection and try again.')
+      }
       throw error
     } finally {
       set({ isLoading: false })
@@ -51,11 +60,17 @@ export const useUserStore = create<UserStore>((set, get) => ({
   signup: async (email, password, profile) => {
     set({ isLoading: true })
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, profile })
+        body: JSON.stringify({ email, password, profile }),
+        signal: controller.signal
       })
+
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
         const error = await response.json()
@@ -66,6 +81,9 @@ export const useUserStore = create<UserStore>((set, get) => ({
       set({ user: data.user, isAuthenticated: true })
     } catch (error) {
       console.error('Signup error:', error)
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Request timed out. Please check your connection and try again.')
+      }
       throw error
     } finally {
       set({ isLoading: false })
@@ -91,6 +109,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
         const data = await response.json()
         set({ user: data.user, isAuthenticated: true })
       } else {
+        console.log('fetchUser: Not authenticated, status:', response.status)
         set({ user: null, isAuthenticated: false })
       }
     } catch (error) {
