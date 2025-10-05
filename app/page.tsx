@@ -24,23 +24,7 @@ export default function HomePage() {
         </defs>
         <rect width="100%" height="100%" fill="url(#grid)" />
       </svg>
-      {/* Minimal Header */}
-      <header className="fixed top-0 inset-x-0 z-10 border-b bg-white/70 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ChefHat className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium tracking-wide">Recipe Optimizer</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Link href="/login">
-              <Button size="sm" variant="ghost" className="h-8 px-3">Sign in</Button>
-            </Link>
-            <Link href="/signup">
-              <Button size="sm" className="h-8 px-3">Get started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* Header removed for minimal homepage */}
 
       <main className="flex-1 relative z-10">
         {/* Slim Hero */}
