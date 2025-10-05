@@ -19,6 +19,7 @@ interface RecipeStore {
   fetchRecipes: () => Promise<void>
   fetchRecipe: (id: string) => Promise<void>
   createRecipe: (input: RecipeInput) => Promise<RecipeWithRelations>
+  createRecipeFromNaturalLanguage: (description: string) => Promise<RecipeWithRelations>
   optimizeRecipe: (recipeId: string) => Promise<void>
   deleteRecipe: (recipeId: string) => Promise<void>
   setCurrentRecipe: (recipe: RecipeWithRelations | null) => void
@@ -96,6 +97,37 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
       const message = error instanceof Error ? error.message : 'Unknown error'
       set({ error: message })
       console.error('Create recipe error:', error)
+      throw error
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  createRecipeFromNaturalLanguage: async (description) => {
+    set({ isLoading: true, error: null })
+    try {
+      const response = await fetch('/api/recipes/create-from-nl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create recipe from description')
+      }
+
+      const data = await response.json()
+      set((state) => ({
+        recipes: [data.recipe, ...state.recipes],
+        currentRecipe: data.recipe
+      }))
+      
+      return data.recipe
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      set({ error: message })
+      console.error('Create recipe from natural language error:', error)
       throw error
     } finally {
       set({ isLoading: false })
