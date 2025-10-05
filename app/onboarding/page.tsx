@@ -124,7 +124,7 @@ export default function OnboardingPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Let's personalize your experience</CardTitle>
+            <CardTitle>Let&apos;s personalize your experience</CardTitle>
             <CardDescription>Step {step} of 2</CardDescription>
             <div className="flex gap-2 mt-4">
               {[1, 2].map((i) => (
@@ -142,7 +142,7 @@ export default function OnboardingPage() {
             {step === 1 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">What's your primary health goal?</h3>
+                  <h3 className="text-lg font-semibold mb-4">What&apos;s your primary health goal?</h3>
                   <div className="space-y-3">
                     {[
                       { value: 'LOSE_WEIGHT', label: 'Lose Weight', desc: 'Reduce calories, increase protein' },
